@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <item
+        android:id="@+id/newEvent"
+        android:title="@string/new_event"
+        android:icon="@drawable/ic_add_circle_black_24dp"
+        app:showAsAction="ifRoom"
+        />
+    <!--    <item
+            android:id="@+id/saveEvent"
+            android:title="@string/save_event"
+            />
+        <item
+            android:id="@+id/cancelEvent"
+            android:title="@string/cancel_event"
+            />
+        <item
+            android:id="@+id/descrEvent"
+            android:title="@string/event_descr"
+            />
+        <item
+            android:id="@+id/startEvent"
+            android:title="@string/event_start"
+            />
+        <item
+            android:id="@+id/stopEvent"
+            android:title="@string/event_end"
+            />-->
+</menu>

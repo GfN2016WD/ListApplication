@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<TableLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+    <TableRow>
+        <TextView
+            android:id="@+id/linearLayoutEventDate"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textStyle="normal"
+            android:paddingTop="5dp"
+            android:paddingBottom="5dp"
+            android:paddingLeft="10dp"
+            android:paddingRight="5dp"
+            android:layout_weight="1"
+            android:textSize="15sp"
+            android:text="24-10-2017 09:00"/>
+        <TextView
+            android:id="@+id/linearLayoutEventDescription"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:textStyle="normal"
+            android:paddingTop="5dp"
+            android:paddingBottom="5dp"
+            android:paddingLeft="10dp"
+            android:paddingRight="5dp"
+            android:layout_weight="1"
+            android:textSize="15sp"
+            android:text="Fishing trip"/>
+    </TableRow>
+    <TableRow>
+        <TextView
+            android:id="@+id/linearLayoutEventLocation"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textStyle="normal"
+            android:paddingTop="5dp"
+            android:paddingBottom="5dp"
+            android:paddingLeft="10dp"
+            android:paddingRight="5dp"
+            android:layout_weight="1"
+            android:textSize="15sp"
+            android:text="Lake Tatanka"/>
+        <TextView
+            android:id="@+id/linearLayoutEventDetails"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:textStyle="normal"
+            android:paddingTop="5dp"
+            android:paddingBottom="5dp"
+            android:paddingLeft="10dp"
+            android:paddingRight="5dp"
+            android:layout_weight="1"
+            android:textSize="15sp"
+            android:text="with: Jeffrey Parker"/>
+    </TableRow>
+</TableLayout>
