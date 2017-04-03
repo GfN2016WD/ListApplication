@@ -4,7 +4,11 @@
     <string name="save_event">save new event</string>
     <string name="cancel_event">cancel event</string>
     <string name="event_descr">event description</string>
+    <string name="event_description">Name of activity</string>
     <string name="event_start">event start</string>
     <string name="event_end">event end</string>
     <string name="event_list_header">Events</string>
+    <string name="checkbox_status">Status</string>
+    <string name="status_active">Status: Active</string>
+    <string name="status_inactive">Status: Inactive</string>
 </resources>

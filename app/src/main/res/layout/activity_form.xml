@@ -14,7 +14,7 @@
         android:layout_height="wrap_content"
         android:ems="10"
         android:inputType="textPersonName"
-        android:hint="Name" />
+        android:hint="@string/event_description" />
 
     <EditText
         android:id="@+id/txtStart"
@@ -30,10 +30,34 @@
         android:ems="10"
         android:inputType="date" />
 
-    <Spinner
+<!--    <Spinner
         android:id="@+id/spinner"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
+        android:layout_height="wrap_content" /> -->
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal" >
+        <CheckBox
+            android:id="@+id/chkStatus"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="start"
+            android:ems="10"
+            android:textSize="12sp"
+            android:text="@string/checkbox_status"
+            android:checked="true"
+            android:onClick="onCheckChangeStatus"/>
+
+        <TextView
+            android:id="@+id/txtStatus"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical|end"
+            android:text="@string/status_active"
+            android:textSize="20sp" />
+    </LinearLayout>
 
     <Button
         android:id="@+id/btnSave"
