@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -21,15 +20,34 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:ems="10"
-        android:inputType="date" />
+        android:inputType="date"
+        android:focusable="false" />
 
     <EditText
         android:id="@+id/txtEnd"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:ems="10"
-        android:inputType="date" />
+        android:inputType="date"
+        android:focusable="false" />
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal" >
+        <EditText
+            android:id="@+id/location_long"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:inputType="text"
+            android:text="@string/event_location_long" />
 
+        <EditText
+            android:id="@+id/location_lat"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:inputType="text"
+            android:text="@string/event_location_lat" />
+    </LinearLayout>
 <!--    <Spinner
         android:id="@+id/spinner"
         android:layout_width="match_parent"
@@ -48,7 +66,7 @@
             android:textSize="12sp"
             android:text="@string/checkbox_status"
             android:checked="true"
-            android:onClick="onCheckChangeStatus"/>
+            android:onClick="onCheckChangeStatus" />
 
         <TextView
             android:id="@+id/txtStatus"
@@ -58,6 +76,12 @@
             android:text="@string/status_active"
             android:textSize="20sp" />
     </LinearLayout>
+
+    <Button
+        android:id="@+id/btnLocation"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/pick_location" />
 
     <Button
         android:id="@+id/btnSave"

@@ -1,8 +1,11 @@
 package android.java.gfn.de.listapplication;
 
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.EventLog;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -26,10 +29,12 @@ public class MainActivity extends AppCompatActivity {
             "Clark Kent",
             "Peter Pan"
     };*/
-    private Event[] data;
-    // integrate ListView into AppCompatActivity, no need fpr ListActivity
-    private ListView eventList;
+//    private Event[] data;
+    // integrate ListView into AppCompatActivity, no need for ListActivity
+    private ListView eventListView;
     private static final String TAG = MainActivity.class.getName();
+    private List<Event> eventList;
+    private EventManager eventManager = EventManager.getInstance();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,19 +54,43 @@ public class MainActivity extends AppCompatActivity {
         db.insertValues(event);
         db.insertValues(event); */
 //        getListView().setChoiceMode(List  View.CHOICE_MODE_MULTIPLE);
+/*        EventManager.getInstance().setEventList(db.open().findEntries());
         data = db.open().findEntries().toArray(new Event[0]);
-        db.close();
-        eventList = (ListView)findViewById(R.id.eventList);
+        db.close(); */
+        eventListView = (ListView)findViewById(R.id.eventList);
+        eventList = refreshEventList();
 //        ArrayAdapter<String> adapter = new ArrayAdapter<String>(MainActivity.this, android.R.layout.simple_list_item_1, data);
-        EventAdapter adapter = new EventAdapter(MainActivity.this, R.layout.eventlist_row, data);
+//        EventAdapter adapter = new EventAdapter(MainActivity.this, R.layout.eventlist_row, eventList);
         View header = getLayoutInflater().inflate(R.layout.eventlist_header, null); // eventlist_header should be eventlist_header
-        eventList.addHeaderView(header);
-        eventList.setAdapter(adapter);
+        eventListView.addHeaderView(header);
+//        eventListView.setAdapter(adapter);
 
-        eventList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+        eventListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+
             @Override
-            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                Toast.makeText(MainActivity.this, "Hallo Welt", Toast.LENGTH_SHORT).show();
+            public void onItemClick(AdapterView<?> adapterView, View view, final int position, long id) {
+
+                DialogInterface.OnClickListener editListener = new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        eventManager.setCurrentEvent(eventList.get(position-1));
+                        Intent intent = new Intent(MainActivity.this,FormActivity.class);
+                        startActivityForResult(intent, 1);
+                    }
+                };
+
+                DialogInterface.OnClickListener deleteListener = new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        db.open().deleteEntry(eventManager.getEventList().get(position-1));
+                        eventManager.setCurrentEvent(null);
+                        eventList = refreshEventList();
+                    }
+                };
+
+                (new AlertDialog.Builder(MainActivity.this)).setTitle("Event").setMessage("Was willst du machen?").
+                        setPositiveButton(R.string.alert_dialog_delete, deleteListener).
+                        setNegativeButton(R.string.alert_dialog_edit, editListener).create().show();
             }
         });
 //        View row = getLayoutInflater().inflate(R.layout.eventlist_row, null); // eventlist_header should be eventlist_header
@@ -77,10 +106,11 @@ public class MainActivity extends AppCompatActivity {
         Log.d(TAG, "onResume() start");
 //        EventAdapter adapter = new EventAdapter(MainActivity.this, R.layout.eventlist_row, data);
 //        Log.d("MainActivity","onResume()");
-        data = db.open().findEntries().toArray(new Event[0]);
+/*        data = db.open().findEntries().toArray(new Event[0]);
         db.close();
         EventAdapter adapter = new EventAdapter(MainActivity.this, R.layout.eventlist_row, data);
-        eventList.setAdapter(adapter);
+        eventList.setAdapter(adapter);*/
+        eventList = refreshEventList();
         Log.d(TAG, "onResume() end");
     }
 
@@ -145,13 +175,35 @@ public class MainActivity extends AppCompatActivity {
         Log.d(TAG, "onActivityResult() start");
         if(requestCode == 1) {
             if(resultCode == RESULT_OK) {
-                Event event = (Event) data.getExtras().getSerializable("event");
-                Log.d(TAG,event.getDescription());
-                db.open().insertValues(event);
-                // TODO: - add new events ListView
-                db.close();
+                Event event = eventManager.getCurrentEvent();
+                if (event != null) {
+                    db.open();
+                    if (event.getId() == 0) {
+                        // Event event = (Event) data.getExtras().getSerializable("event");
+                        Log.d(TAG, event.getDescription());
+                        db.insertValues(event);
+                        // TODO: - add new events ListView
+                    } else {
+                        db.updateValues(event);
+                    }
+                    db.close();
+                    eventManager.setCurrentEvent(null);
+                }
             }
+            Log.d(TAG, "onActivityResult() end");
         }
-        Log.d(TAG, "onActivityResult() end");
+    }
+
+    private List<Event> refreshEventList() {
+        eventManager.setEventList(db.open().findEntries());
+        List<Event> eventList = eventManager.getEventList();
+        db.close();
+
+        EventAdapter adapter = new EventAdapter(MainActivity.this, R.layout.eventlist_row, eventList);
+        if (eventListView == null) {
+            Log.d(TAG, "eventListView of MainActivity is null");
+        }
+        eventListView.setAdapter(adapter);
+        return eventList;
     }
 }

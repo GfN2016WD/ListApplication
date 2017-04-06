@@ -1,28 +1,35 @@
 package android.java.gfn.de.listapplication;
 
 import android.content.Intent;
+import android.location.Location;
+import android.location.LocationListener;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
-import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.util.Date;
 
-public class FormActivity extends AppCompatActivity {
+public class FormActivity extends AppCompatActivity implements LocationListener {
 
     private EditText txtDescription;
     private EditText txtStart;
     private EditText txtEnd;
+    private EditText txtLong;
+    private EditText txtLat;
     private CheckBox chkStatus;
     private TextView txtStatus;
     private Button saveBtn;
     private Button cancelBtn;
-    Event event;
+    private EventManager eventManager = EventManager.getInstance();
+    private Event currentEvent = eventManager.getCurrentEvent();
+    private Location currentLocation;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -36,6 +43,11 @@ public class FormActivity extends AppCompatActivity {
         txtEnd = (EditText)findViewById(R.id.txtEnd);
         txtStatus = (TextView)findViewById(R.id.txtStatus);
         chkStatus = (CheckBox)findViewById(R.id.chkStatus);
+        txtLong = (EditText)findViewById(R.id.location_long);
+        txtLat = (EditText)findViewById(R.id.location_lat);
+
+
+        setFormByEvent();
 
 /*        Spinner spinner = (Spinner) findViewById(R.id.spinner);
 // Create an ArrayAdapter using the string array and a default spinner layout
@@ -50,8 +62,13 @@ public class FormActivity extends AppCompatActivity {
         saveBtn.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View v) {
-                event = new Event();
-                event.setCreated(new Date());
+                Event event = null;
+                if (currentEvent == null) {
+                    event = new Event();
+                    event.setCreated(new Date());
+                } else {
+                    event = currentEvent;
+                }
                 event.setDescription(txtDescription.getText().toString());
                 event.setStart(BasicHelper.parseDate(txtStart.getText().toString()));
                 event.setEnd(BasicHelper.parseDate(txtEnd.getText().toString()));
@@ -65,7 +82,8 @@ public class FormActivity extends AppCompatActivity {
                     event.setStatus(0);
                 }
                 Intent intent = new Intent();
-                intent.putExtra("event", event);
+//                intent.putExtra("event", event);
+                eventManager.setCurrentEvent(event);
                 setResult(RESULT_OK, intent);
                 finish();
             }
@@ -79,6 +97,36 @@ public class FormActivity extends AppCompatActivity {
                 startActivity(intent);
             }
         });
+
+        txtStart.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                DateFragment fragment = new DateFragment();
+                Bundle bundle = new Bundle();
+                bundle.putInt("fieldID", R.id.txtStart);
+                // add bundle to fragment
+                fragment.setArguments(bundle);
+                FragmentManager manager = getSupportFragmentManager();
+                FragmentTransaction transaction = manager.beginTransaction();
+                transaction.add(fragment,"Date Dialog");
+                transaction.commit();
+            }
+        });
+
+        txtEnd.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                DateFragment fragment = new DateFragment();
+                Bundle bundle = new Bundle();
+                bundle.putInt("fieldID", R.id.txtEnd);
+                fragment.setArguments(bundle);
+                FragmentManager manager = getSupportFragmentManager();
+                FragmentTransaction transaction = manager.beginTransaction();
+                transaction.add(fragment,"Date Dialog");
+                transaction.commit();
+            }
+        });
+
         /* Event event = new Event();
         event.setCreated(new Date());
         event.setDescription("Das ist was ganz feines!");
@@ -91,11 +139,45 @@ public class FormActivity extends AppCompatActivity {
 
     public void onCheckChangeStatus(View view) {
         // Is the view now checked?
-        boolean checked = chkStatus.isChecked();
-        if (checked) {
+        if (chkStatus.isChecked()) {
             txtStatus.setText(getResources().getString(R.string.status_active));
         } else {
             txtStatus.setText(getResources().getString(R.string.status_inactive));
         }
+    }
+
+    public void setDate(int fieldId, Date date) {
+        ((TextView)findViewById(fieldId)).setText(BasicHelper.formatdate(date));
+    }
+
+    private void setFormByEvent() {
+        if (currentEvent != null) {
+            txtDescription.setText(currentEvent.getDescription());
+            txtStart.setText(BasicHelper.formatdate(currentEvent.getStart()));
+            txtEnd.setText(BasicHelper.formatdate(currentEvent.getEnd()));
+            // TODO: set status and checkbox for status!
+        }
+    }
+
+    @Override
+    public void onProviderEnabled(String provider) {
+        Toast.makeText(this, "GPS", Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void onProviderDisabled(String provider) {
+        Toast.makeText(this, "GPS disabled", Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void onLocationChanged(Location location) {
+        if (location != null) {
+            currentLocation = location;
+        }
+    }
+
+    @Override
+    public void onStatusChanged(String provider, int status, Bundle extras) {
+
     }
 }

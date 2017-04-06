@@ -11,6 +11,8 @@ import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import java.util.List;
+
 /**
  * Created by TN77 on 29.03.2017.
  */
@@ -18,14 +20,14 @@ import android.widget.TextView;
 public class EventAdapter extends ArrayAdapter<Event> {
     private Context context;
     private int resource;
-    private Event data[ ];
+    private List<Event> eventList;
 
     // ArrayAdapter(Context context, int resource, T[] objects)
-    public EventAdapter(Context context, int resource, Event[] data) {
-        super(context, resource, data);
+    public EventAdapter(Context context, int resource, List<Event> eventList) {
+        super(context, resource, eventList);
         this.context = context;
         this.resource = resource;
-        this.data = data;
+        this.eventList = eventList;
     }
 
     @NonNull
@@ -50,7 +52,7 @@ public class EventAdapter extends ArrayAdapter<Event> {
             }
         }
 //        return super.getView(position, convertView, parent);
-        Event event = data[position];
+        Event event = eventList.get(position);
         holder.txtDescription.setText(event.getDescription());
         holder.txtStart.setText(event.getStart().toString());
         holder.txtEnd.setText(event.getEnd().toString());

@@ -36,7 +36,7 @@ public class DBManager extends SQLiteOpenHelper {
                                   "(id INTEGER PRIMARY KEY AUTOINCREMENT, " +
                                   "created DATETIME NOT NULL, description VARCHAR(256), " +
                                   "eventstart DATETIME NOT NULL, eventend DATETIME NOT NULL, " +
-                                  "locationLong FLOAT, locationLat FLOAT, status TINYINT(1) NOT NULL)";
+                                  "locationLong DOUBLE, locationLat DOUBLE, status TINYINT(1) NOT NULL)";
             sqLiteDatabase.execSQL(sqlStatement);
         } catch (SQLException sqlEx) {
             Log.e("ListApplication",sqlEx.getMessage());
@@ -57,7 +57,7 @@ public class DBManager extends SQLiteOpenHelper {
     }
 
     public long updateValues(Event event) {
-        return db.update(DB_TABLE_NAME, event.toContentValues(), "id"+event.getId(), null);
+        return db.update(DB_TABLE_NAME, event.toContentValues(), "id="+event.getId(), null);
     }
 
     public Event findEntry(long id) {
@@ -97,5 +97,9 @@ public class DBManager extends SQLiteOpenHelper {
         if (db != null){
             db.close();
         };
+    }
+
+    public void deleteEntry(Event event) {
+        db.delete(DB_TABLE_NAME, "id = " + event.getId(), null); // or use execSQL()
     }
 }

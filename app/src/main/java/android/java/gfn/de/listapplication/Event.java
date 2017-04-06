@@ -19,12 +19,12 @@ public class Event implements Serializable{
 
     }
 
-    public Event(Date start, Date end, String description, int status) {
+/*    public Event(Date start, Date end, String description, int status) {
         this.start = start;
         this.end = end;
         this.description = description;
         this.status = status;
-    }
+    }*/
 
     private long id;
     private Date created;
