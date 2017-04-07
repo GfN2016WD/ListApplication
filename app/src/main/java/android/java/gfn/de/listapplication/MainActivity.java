@@ -162,8 +162,14 @@ public class MainActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem menuItem) {
         switch(menuItem.getItemId()) {
             case R.id.newEvent:
-                Intent intent = new Intent(MainActivity.this, FormActivity.class);
-                startActivityForResult(intent, 1);
+                Intent intentNewEvent = new Intent(MainActivity.this, FormActivity.class);
+                startActivityForResult(intentNewEvent, 1);
+                return true;
+            case R.id.showMap:
+                Log.d(TAG,"showMap: start");
+                Intent intentShowMap = new Intent(MainActivity.this, MapActivity.class);
+                startActivity(intentShowMap);
+                Log.d(TAG,"showMap: end");
                 return true;
             default:
                 return super.onOptionsItemSelected(menuItem);

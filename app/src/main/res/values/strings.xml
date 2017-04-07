@@ -1,6 +1,7 @@
 <resources>
     <string name="app_name">ListApplication</string>
     <string name="new_event">create new event</string>
+    <string name="show_map">show map</string>
     <string name="save_event">save new event</string>
     <string name="cancel_event">cancel event</string>
     <string name="event_descr">event description</string>
@@ -16,4 +17,5 @@
     <string name="event_location_long">Longitude</string>
     <string name="event_location_lat">Latitude</string>
     <string name="pick_location">Pick location</string>
+    <string name="title_activity_map">Map</string>
 </resources>

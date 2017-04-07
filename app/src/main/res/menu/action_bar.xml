@@ -7,6 +7,12 @@
         android:icon="@drawable/ic_add_circle_black_24dp"
         app:showAsAction="ifRoom"
         />
+    <item
+        android:id="@+id/showMap"
+        android:title="@string/show_map"
+        android:icon="@drawable/ic_add_circle_black_24dp"
+        app:showAsAction="ifRoom"
+        />
     <!--    <item
             android:id="@+id/saveEvent"
             android:title="@string/save_event"

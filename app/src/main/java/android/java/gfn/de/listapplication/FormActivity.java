@@ -1,10 +1,16 @@
 package android.java.gfn.de.listapplication;
 
+import android.Manifest;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.location.Location;
 import android.location.LocationListener;
+import android.location.LocationManager;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v4.content.ContextCompat;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
@@ -18,6 +24,7 @@ import java.util.Date;
 
 public class FormActivity extends AppCompatActivity implements LocationListener {
 
+    private static final int MY_PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 1;
     private EditText txtDescription;
     private EditText txtStart;
     private EditText txtEnd;
@@ -27,25 +34,61 @@ public class FormActivity extends AppCompatActivity implements LocationListener 
     private TextView txtStatus;
     private Button saveBtn;
     private Button cancelBtn;
+    private Button currentLocationBtn;
     private EventManager eventManager = EventManager.getInstance();
     private Event currentEvent = eventManager.getCurrentEvent();
     private Location currentLocation;
+    private LocationManager locationManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_form);
 
-        saveBtn = (Button)findViewById(R.id.btnSave);
-        cancelBtn = (Button)findViewById(R.id.btnCancel);
-        txtDescription = (EditText)findViewById(R.id.txtDescription);
-        txtStart = (EditText)findViewById(R.id.txtStart);
-        txtEnd = (EditText)findViewById(R.id.txtEnd);
-        txtStatus = (TextView)findViewById(R.id.txtStatus);
-        chkStatus = (CheckBox)findViewById(R.id.chkStatus);
-        txtLong = (EditText)findViewById(R.id.location_long);
-        txtLat = (EditText)findViewById(R.id.location_lat);
+        saveBtn = (Button) findViewById(R.id.btnSave);
+        cancelBtn = (Button) findViewById(R.id.btnCancel);
+        currentLocationBtn = (Button) findViewById(R.id.btnLocation);
+        txtDescription = (EditText) findViewById(R.id.txtDescription);
+        txtStart = (EditText) findViewById(R.id.txtStart);
+        txtEnd = (EditText) findViewById(R.id.txtEnd);
+        txtStatus = (TextView) findViewById(R.id.txtStatus);
+        chkStatus = (CheckBox) findViewById(R.id.chkStatus);
+        txtLong = (EditText) findViewById(R.id.location_long);
+        txtLat = (EditText) findViewById(R.id.location_lat);
+        locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            // TODO: Consider calling
+            //    ActivityCompat#requestPermissions
+            // here to request the missing permissions, and then overriding
+            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+            //                                          int[] grantResults)
+            // to handle the case where the user grants the permission. See the documentation
+            // for ActivityCompat#requestPermissions for more details.
+            return;
+        }
+        // Here, thisActivity is the current activity
+        if (ContextCompat.checkSelfPermission(FormActivity.this,
+                Manifest.permission.ACCESS_FINE_LOCATION)
+                != PackageManager.PERMISSION_GRANTED) {
 
+            // Should we show an explanation?
+            if (ActivityCompat.shouldShowRequestPermissionRationale(FormActivity.this,
+                    Manifest.permission.ACCESS_FINE_LOCATION)) {
+//                AlertDialog alertDialog = new AlertDialog
+            } else {
+
+                // No explanation needed, we can request the permission.
+
+                ActivityCompat.requestPermissions(FormActivity.this,
+                        new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
+                        MY_PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION);
+                // MY_PERMISSIONS_REQUEST_READ_CONTACTS is an
+                // app-defined int constant. The callback method gets the
+                // result of the request.
+            }
+        }
+        locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER,
+                2000L, 0F, FormActivity.this);
 
         setFormByEvent();
 
@@ -73,8 +116,8 @@ public class FormActivity extends AppCompatActivity implements LocationListener 
                 event.setStart(BasicHelper.parseDate(txtStart.getText().toString()));
                 event.setEnd(BasicHelper.parseDate(txtEnd.getText().toString()));
                 // TODO auf DatePicker umstellen
-                event.setLocationLat(30);
-                event.setLocationLong(60);
+                event.setLocationLat(Double.parseDouble(txtLat.getText().toString()));
+                event.setLocationLong(Double.parseDouble(txtLong.getText().toString()));
                 // TODO Status dynamisch setzen
                 if (chkStatus.isChecked()) {
                     event.setStatus(1);
@@ -94,7 +137,25 @@ public class FormActivity extends AppCompatActivity implements LocationListener 
             public void onClick(View v) {
                 Intent intent = new Intent(FormActivity.this,MainActivity.class);
                 intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                eventManager.setCurrentEvent(null);
                 startActivity(intent);
+            }
+        });
+
+        currentLocationBtn.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View v) {
+                if (currentLocation != null) {
+                    txtLat.setText(currentLocation.getLatitude() + "");
+                    txtLong.setText(currentLocation.getLongitude() + "");
+                } else {
+                    txtLat.setText(String.valueOf(53.5511));
+                    txtLong.setText(String.valueOf(9.9937));
+                }
+
+/*                Intent intent = new Intent(FormActivity.this,MainActivity.class);
+                intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                startActivity(intent);*/
             }
         });
 
@@ -155,7 +216,28 @@ public class FormActivity extends AppCompatActivity implements LocationListener 
             txtDescription.setText(currentEvent.getDescription());
             txtStart.setText(BasicHelper.formatdate(currentEvent.getStart()));
             txtEnd.setText(BasicHelper.formatdate(currentEvent.getEnd()));
+            txtLong.setText(String.valueOf(currentEvent.getLocationLong()));
+            txtLat.setText(String.valueOf(currentEvent.getLocationLong()));
             // TODO: set status and checkbox for status!
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode,
+                                           String permissions[], int[] grantResults) {
+        switch (requestCode) { //
+            case MY_PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION: {
+                // If request is cancelled, the result arrays are empty.
+                if (grantResults.length > 0
+                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    Toast.makeText(FormActivity.this,"Permission granted!",Toast.LENGTH_SHORT);
+                } else {
+                    Toast.makeText(FormActivity.this,"Permission denied!",Toast.LENGTH_SHORT);
+                }
+                return;
+            }
+            // other 'case' lines to check for other
+            // permissions this app might request
         }
     }
 
